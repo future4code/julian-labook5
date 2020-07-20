@@ -1,10 +1,10 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import { AddressInfo } from "net";
-import { IdGenerator } from "./IdGenetator";
+import { IdGenerator } from "./service/IdGenerator";
 import { UserDatabase } from "./data/UserDatabase";
 import { Authenticator } from "./service/Authenticator";
-import HashManager from "./service/HashManager";
+import { HashManager } from "./service/HashManager";
 
 dotenv.config();
 const app = express();
