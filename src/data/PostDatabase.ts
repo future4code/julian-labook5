@@ -28,11 +28,11 @@ export class PostDatabase extends BaseDatabase {
 		}
     }
 
-    public async getRecipeById(id: string): Promise<any> {
-      const result = await this.getConnection()
-        .select("*")
-        .from(PostDatabase.TABLE_NAME)
-        .where({ id });
+    public async getById(id: string): Promise<any> {
+    	const result = await this.getConnection()
+			.select("*")
+			.from(PostDatabase.TABLE_NAME)
+			.where({ id });
         return result[0];
     } 
 
