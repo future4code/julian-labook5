@@ -1,32 +1,31 @@
 import { BaseDatabase } from "./BaseDatabase";
 
 export class PostDatabase extends BaseDatabase {
-     
     private static TABLE_NAME = "Labook_Post"; 
-  
-    async createRecipe(
-      id: string,      
-      title: string,
-      description: string,
-      id_user: string,
-      createdAt: Date
+
+	async create(
+		id: string,      
+		photo: string,
+		description: string,
+		type: string,
+		id_user: string,
     ) {
-      try {
-          await this.getConnection()
-            .insert({
-              id,
-              title,
-              description,
-              id_user,
-              createdAt 
-            })
-            .into(PostDatabase.TABLE_NAME)
+    	try {
+        	await this.getConnection()
+				.insert({
+				id,
+				photo,
+				description,
+				type,
+				id_user 
+				})
+				.into(PostDatabase.TABLE_NAME);
 
             BaseDatabase.destroyConnection(); 
             
-      } catch (error) {
-        throw new Error(error.sqlMessage || error.message)
-      }
+		} catch (error) {
+        	throw new Error(error.sqlMessage || error.message);
+		}
     }
 
     public async getRecipeById(id: string): Promise<any> {
