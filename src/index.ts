@@ -1,10 +1,14 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import { AddressInfo } from "net";
-import { IdGenerator } from "./service/IdGenerator";
+
+import { IdGenerator } from "./services/IdGenerator"
 import { UserDatabase } from "./data/UserDatabase";
-import { Authenticator } from "./service/Authenticator";
-import { HashManager } from "./service/HashManager";
+import { Authenticator } from "./services/Authenticator";
+import { HashManager } from "./services/HashManager";
+import { PostDatabase } from "./data/PostDatabase";
+import { type } from "os";
+
 
 dotenv.config();
 const app = express();
@@ -89,6 +93,38 @@ app.post("/login", async (req: express.Request, res: express.Response) => {
 
   });
 
+app.post("/post", async (req: Request, res: Response) => {
+    try {
+        const token = req.headers.authorization as string;
+        
+        const authenticator = new Authenticator();
+        const authenticationData = authenticator.getData(token);
+
+        const postData = {
+            photo: req.body.photo,
+            description: req.body.description,
+            type: req.body.description
+        };
+
+        const userDb = new UserDatabase();
+        const user = await userDb.getById(authenticationData.id);
+
+        const idGenerator =  new IdGenerator();
+        const id = idGenerator.generate();
+
+        const postDb = new PostDatabase();
+        await postDb.create(id, postData.photo, postData.description, postData.type, user.id);
+
+        res.status(200).send({
+            message: "Post criado com sucesso!"
+        });
+
+    } catch (error) {
+        res.status(400).send({
+            message: error.message,
+        });
+    }
+});
 
 const server = app.listen(process.env.PORT || 3003, () => {
     if (server) {
