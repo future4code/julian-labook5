@@ -40,3 +40,4 @@ export class UserDatabase extends BaseDatabase {
       throw new Error(err.sqlMessage || err.message)
     }
   }
+}
