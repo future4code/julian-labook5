@@ -104,7 +104,7 @@ app.post("/post", async (req: Request, res: Response) => {
         const postData = {
             photo: req.body.photo,
             description: req.body.description,
-            type: req.body.description
+            type: req.body.type
         };
 
         const userDb = new UserDatabase();
