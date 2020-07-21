@@ -45,6 +45,25 @@ export class PostDatabase extends BaseDatabase {
       return result[0]
 	}
 	
+
+	public async getByType(type: string): Promise<any> {
+    	const result = await this.getConnection()
+			.select("*")
+			.from(PostDatabase.TABLE_NAME)
+			.where({ type });
+        return result[0];
+	};
+
+	public getFeedByType = async (type: string): Promise<any> => {
+		const result = await this.getConnection().raw(`
+		SELECT p.id, p.photo, p.description, p.description, p.createdAt, p.type, p.userId
+		FROM Labook_Post p
+		JOIN Labook_User u ON p.userId=u.id
+		WHERE p.type=${type}
+		`)
+		return result[0]
+	}
+
 	public getPosts = async (id_user: string): Promise<any> => {
         const result = await this.getConnection().raw(`
             SELECT p.id, p.photo, p.description, p.createdAt, p.type, p.id_user FROM Labook_Post p 
@@ -53,4 +72,5 @@ export class PostDatabase extends BaseDatabase {
         `)
         return result[0]
       }
+
 }
