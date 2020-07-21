@@ -146,6 +146,28 @@ app.post('/user/invite/:id', async (req: express.Request, res: express.Response)
     }
 })
 
+app.delete('/user/undo/:id', async (req: express.Request, res: express.Response) => {
+    try {
+        const token= req.headers.authorization as string;
+
+        const authenticator = new Authenticator();
+        const authenticationData = authenticator.getData(token);
+
+        if (!req.params.id || req.params.id === "") {
+            throw new Error("Usuário inválido / Campo vazio.")
+        }
+               
+        const undoFriend = new FriendDatabase();
+        await undoFriend.undo(authenticationData.id, req.params.id);
+
+        res.status(200).send("Você deixou de seguir o perfil")
+    
+    } catch (error) {
+        res.status(400).send({
+            message: error.message
+        })
+    }
+})
 
 const server = app.listen(process.env.PORT || 3003, () => {
     if (server) {
