@@ -146,6 +146,27 @@ app.post('/user/invite/:id', async (req: express.Request, res: express.Response)
     }
 })
 
+app.get("user/feed", async (req: Request, res: Response) => {
+    try {
+        const token = req.headers.authorization as string;
+
+        const authenticator = new Authenticator();
+        const authenticationData = authenticator.getData(token);
+
+        const post  = new PostDatabase();
+        const postData = post.getPosts(authenticationData.id);
+
+        res.status(200).send({
+            postData
+        })
+
+    } catch (err) {
+        res.status(400).send({
+            message: err.message,
+        });
+    }
+});
+
 
 const server = app.listen(process.env.PORT || 3003, () => {
     if (server) {
