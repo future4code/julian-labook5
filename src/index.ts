@@ -8,7 +8,6 @@ import { Authenticator } from "./services/Authenticator";
 import { HashManager } from "./services/HashManager";
 import { PostDatabase } from "./data/PostDatabase";
 import { FriendDatabase } from "./data/FriendDatabase";
-import { type } from "os";
 
 
 dotenv.config();
@@ -145,6 +144,39 @@ app.post('/user/invite/:id', async (req: express.Request, res: express.Response)
         })
     }
 })
+
+app.get("/user/feed/:type", async (req: Request, res: Response) => {
+    try {
+        const type = req.params.type;
+        
+        const token = req.headers.authorization as string;
+
+        const authenticator = new Authenticator();
+        const authenticationData = authenticator.getData(token);
+
+        const userDb = new UserDatabase();
+        const user = await userDb.getById(authenticationData.id);
+
+        const postDb = new PostDatabase();
+        const post = await postDb.getByType(type);
+
+        const typeFeed = await postDb.getByType(type);
+
+        res.status(200).send({
+            /*id: post.id,
+            photo: post.photo,
+            description: post.description,
+            createdAt: post.createdAt,
+            type: post.type,
+            userId: post.userId*/
+            typeFeed
+        });
+    } catch (error) {
+        res.status(400).send({
+            message: error.message
+        });
+    }
+});
 
 
 const server = app.listen(process.env.PORT || 3003, () => {

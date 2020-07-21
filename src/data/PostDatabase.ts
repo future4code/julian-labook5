@@ -43,5 +43,23 @@ export class PostDatabase extends BaseDatabase {
           JOIN Cookenu_User u ON r.id_user = u.id;
         `)
       return result[0]
-    }
+	}
+	
+	public async getByType(type: string): Promise<any> {
+    	const result = await this.getConnection()
+			.select("*")
+			.from(PostDatabase.TABLE_NAME)
+			.where({ type });
+        return result[0];
+	};
+
+	public getFeedByType = async (type: string): Promise<any> => {
+		const result = await this.getConnection().raw(`
+		SELECT p.id, p.photo, p.description, p.description, p.createdAt, p.type, p.userId
+		FROM Labook_Post p
+		JOIN Labook_User u ON p.userId=u.id
+		WHERE p.type=${type}
+		`)
+		return result[0]
+	}
 }
