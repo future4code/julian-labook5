@@ -7,6 +7,7 @@ import { UserDatabase } from "./data/UserDatabase";
 import { Authenticator } from "./services/Authenticator";
 import { HashManager } from "./services/HashManager";
 import { PostDatabase } from "./data/PostDatabase";
+import { FriendDatabase } from "./data/FriendDatabase";
 import { type } from "os";
 
 
@@ -125,6 +126,26 @@ app.post("/post", async (req: Request, res: Response) => {
         });
     }
 });
+
+app.post('/user/invite/:id', async (req: express.Request, res: express.Response) => {
+    try {
+        const token= req.headers.authorization as string;
+
+        const authenticator = new Authenticator();
+        const authenticationData = authenticator.getData(token);
+        
+        const inviteFriend = new FriendDatabase();
+        const friend = await inviteFriend.invite(authenticationData.id, req.params.id);
+
+        res.status(200).send("Now you're friends!")
+    
+    } catch (error) {
+        res.status(400).send({
+            message: error.message
+        })
+    }
+})
+
 
 const server = app.listen(process.env.PORT || 3003, () => {
     if (server) {

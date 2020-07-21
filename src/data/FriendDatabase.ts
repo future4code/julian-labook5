@@ -4,11 +4,11 @@ export class FriendDatabase extends BaseDatabase {
      
   private static TABLE_NAME = "Labook_Friend"; 
   
-  async invite (id_User: string, id_friend: string): Promise<any>{
+  async invite (id_user: string, id_friend: string): Promise<any>{
     try {
       await this.getConnection()
       .insert({
-        id_User,
+        id_user,
         id_friend
       })
       .into(FriendDatabase.TABLE_NAME)
