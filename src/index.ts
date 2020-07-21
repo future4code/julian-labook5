@@ -44,7 +44,7 @@ app.post('/signup', async (req: express.Request, res: express.Response) => {
         const id = idGenerator.generate();
 
         const userDB = new UserDatabase();
-        const user = await userDB.create (id, userData.name, userData.email, cipherText)
+        const user = await userDB.create(id, userData.name, userData.email, cipherText)
 
         const authenticator = new Authenticator();
         const token = authenticator.generateToken({
@@ -60,31 +60,31 @@ app.post('/signup', async (req: express.Request, res: express.Response) => {
 })
 
 app.post("/login", async (req: express.Request, res: express.Response) => {
-    try{
-      const userData = 
-      {
-        email: req.body.email,
-        password: req.body.password
-      }
+    try {
+        const userData =
+        {
+            email: req.body.email,
+            password: req.body.password
+        }
 
-      const userDatabase = new UserDatabase();
-      const user = await userDatabase.getByEmail(userData.email); 
+        const userDatabase = new UserDatabase();
+        const user = await userDatabase.getByEmail(userData.email);
 
-      const hashManager = new HashManager()
-      const comparePassword = await hashManager.compare(userData.password, user.password)
+        const hashManager = new HashManager()
+        const comparePassword = await hashManager.compare(userData.password, user.password)
 
-      if(user.email !== userData.email){
-        throw new Error("E-mail inválido.");
-      }
+        if (user.email !== userData.email) {
+            throw new Error("E-mail inválido.");
+        }
 
-      if(comparePassword === false){
-        throw new Error("Senha inválida.");
-      }
+        if (comparePassword === false) {
+            throw new Error("Senha inválida.");
+        }
 
-      const authenticator = new Authenticator();
-      const token = authenticator.generateToken({id: user.id});
+        const authenticator = new Authenticator();
+        const token = authenticator.generateToken({ id: user.id });
 
-      res.status(200).send({token});
+        res.status(200).send({ token });
 
     } catch (err) {
         res.status(400).send({
@@ -92,12 +92,12 @@ app.post("/login", async (req: express.Request, res: express.Response) => {
         });
     }
 
-  });
+});
 
 app.post("/post", async (req: Request, res: Response) => {
     try {
         const token = req.headers.authorization as string;
-        
+
         const authenticator = new Authenticator();
         const authenticationData = authenticator.getData(token);
 
@@ -110,7 +110,7 @@ app.post("/post", async (req: Request, res: Response) => {
         const userDb = new UserDatabase();
         const user = await userDb.getById(authenticationData.id);
 
-        const idGenerator =  new IdGenerator();
+        const idGenerator = new IdGenerator();
         const id = idGenerator.generate();
 
         const postDb = new PostDatabase();
@@ -129,16 +129,16 @@ app.post("/post", async (req: Request, res: Response) => {
 
 app.post('/user/invite/:id', async (req: express.Request, res: express.Response) => {
     try {
-        const token= req.headers.authorization as string;
+        const token = req.headers.authorization as string;
 
         const authenticator = new Authenticator();
         const authenticationData = authenticator.getData(token);
-        
+
         const inviteFriend = new FriendDatabase();
         const friend = await inviteFriend.invite(authenticationData.id, req.params.id);
 
         res.status(200).send("Now you're friends!")
-    
+
     } catch (error) {
         res.status(400).send({
             message: error.message
@@ -149,16 +149,19 @@ app.post('/user/invite/:id', async (req: express.Request, res: express.Response)
 
 app.delete('/user/undo/:id', async (req: express.Request, res: express.Response) => {
     try {
-        const token= req.headers.authorization as string;
-            if (!req.params.id || req.params.id === "") {
+        const token = req.headers.authorization as string;
+
+        const authenticator = new Authenticator();
+        const authenticationData = authenticator.getData(token);
+        if (!req.params.id || req.params.id === "") {
             throw new Error("Usuário inválido / Campo vazio.")
         }
-               
+
         const undoFriend = new FriendDatabase();
         await undoFriend.undo(authenticationData.id, req.params.id);
 
         res.status(200).send("Você deixou de seguir o perfil")
-    
+
     } catch (error) {
         res.status(400).send({
             message: error.message
@@ -166,15 +169,15 @@ app.delete('/user/undo/:id', async (req: express.Request, res: express.Response)
     }
 })
 
-app.get("user/feed", async (req: Request, res: Response) => {
+app.get("/user/feed", async (req: Request, res: Response) => {
     try {
         const token = req.headers.authorization as string;
-      
+
         const authenticator = new Authenticator();
         const authenticationData = authenticator.getData(token);
-        
-        const post  = new PostDatabase();
-        const postData = post.getPosts(authenticationData.id);
+
+        const post = new PostDatabase();
+        const postData = await post.getPosts(authenticationData.id);
 
         res.status(200).send({
             postData
@@ -195,4 +198,4 @@ const server = app.listen(process.env.PORT || 3003, () => {
     } else {
         console.error(`Failure upon starting server.`);
     }
-  });
+});
