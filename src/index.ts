@@ -10,6 +10,7 @@ import { PostDatabase } from "./data/PostDatabase";
 import { FriendDatabase } from "./data/FriendDatabase";
 
 import { postRouter } from "./router/PostRouter";
+import { userRouter } from "./router/UserRouter";
 
 dotenv.config();
 const app = express();
@@ -129,7 +130,9 @@ app.post("/login", async (req: express.Request, res: express.Response) => {
     }
 }); */
 
-app.post('/user/invite/:id', async (req: express.Request, res: express.Response) => {
+app.use("/user/invite/:id", userRouter);
+app.use("/user/undo/:id", userRouter);
+/*app.post('/user/invite/:id', async (req: express.Request, res: express.Response) => {
     try {
         const token = req.headers.authorization as string;
 
@@ -146,7 +149,7 @@ app.post('/user/invite/:id', async (req: express.Request, res: express.Response)
             message: error.message
         })
     }
-})
+})*/
 
 app.get("/user/feed/:type", async (req: Request, res: Response) => {
     try {
@@ -182,7 +185,8 @@ app.get("/user/feed/:type", async (req: Request, res: Response) => {
 });
 
 
-app.delete('/user/undo/:id', async (req: express.Request, res: express.Response) => {
+
+/*app.delete('/user/undo/:id', async (req: express.Request, res: express.Response) => {
     try {
         const token = req.headers.authorization as string;
 
@@ -202,7 +206,7 @@ app.delete('/user/undo/:id', async (req: express.Request, res: express.Response)
             message: error.message
         })
     }
-})
+})*/
 
 app.get("/user/feed", async (req: Request, res: Response) => {
     try {
