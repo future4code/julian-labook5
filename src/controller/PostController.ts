@@ -21,17 +21,14 @@ export class PostController {
                 type: request.body.type
             };
 
-        const userDb = new UserDatabase();
-        const user = await userDb.getById(authenticationData.id);
+            const userDb = new UserDatabase();
+            const user = await userDb.getById(authenticationData.id);
 
-        const idGenerator = new IdGenerator();
-        const id = idGenerator.generate();
-
-        await postBusiness.create(id, postData.photo, postData.description, postData.type, user.id);
+            await postBusiness.create(postData.photo, postData.description, postData.type, user.id);
             
             response.status(200).send({
                 message: "Post criado com sucesso!"
-            })
+            });
         } catch (error) {
             response.status(400).send({
                 error: error.message
