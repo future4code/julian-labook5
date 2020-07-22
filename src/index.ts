@@ -9,10 +9,13 @@ import { HashManager } from "./services/HashManager";
 import { PostDatabase } from "./data/PostDatabase";
 import { FriendDatabase } from "./data/FriendDatabase";
 
+import { postRouter } from "./router/PostRouter";
 
 dotenv.config();
 const app = express();
 app.use(express.json());
+
+app.use("/post", postRouter);
 
 
 app.post('/signup', async (req: express.Request, res: express.Response) => {
@@ -93,7 +96,7 @@ app.post("/login", async (req: express.Request, res: express.Response) => {
 
 });
 
-app.post("/post", async (req: Request, res: Response) => {
+/* app.post("/post", async (req: Request, res: Response) => {
     try {
         const token = req.headers.authorization as string;
 
@@ -124,7 +127,7 @@ app.post("/post", async (req: Request, res: Response) => {
             message: error.message,
         });
     }
-});
+}); */
 
 app.post('/user/invite/:id', async (req: express.Request, res: express.Response) => {
     try {
