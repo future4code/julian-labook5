@@ -3,6 +3,10 @@ import { Authenticator } from "../services/Authenticator";
 import { FriendDatabase } from "../data/FriendDatabase";
 import { UserDatabase } from "../data/UserDatabase";
 import { PostDatabase } from "../data/PostDatabase";
+
+import { SignupBusiness } from "../business/SignupBusiness";
+import { HashManager } from "../services/HashManager";
+
 import { UserBusiness } from "../business/UserBusiness";
 
 export class UserController {
@@ -40,25 +44,6 @@ export class UserController {
                 message: error.message
             })
         }
-    }
-}
-
-export const invite = async (req: express.Request, res: express.Response) => {
-    try {
-        const token = req.headers.authorization as string;
-
-        const authenticator = new Authenticator();
-        const authenticationData = authenticator.getData(token);
-
-        const inviteFriend = new FriendDatabase();
-        const friend = await inviteFriend.invite(authenticationData.id, req.params.id);
-
-        res.status(200).send("Now you're friends!")
-
-    } catch (error) {
-        res.status(400).send({
-            message: error.message
-        })
     }
 }
 
@@ -137,4 +122,73 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
         })
     }
 }
+
+export const signup = async (req: express.Request, res: express.Response) => {
+    try {
+
+        if (!req.body.name || req.body.name === "") {
+            throw new Error("Nome inválido / Campo vazio.")
+
+        }
+        if (!req.body.email || req.body.email.indexOf("@") === -1) {
+            throw new Error("E-mail inválido.")
+        }
+
+        if (!req.body.password || req.body.password.length < 6) {
+            throw new Error("Senha inválida.")
+        }
+
+        const userData = {
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password
+        }
+        
+        const userBusiness = new SignupBusiness();
+        const token = await userBusiness.signup(userData.name, userData.email, userData.password);
+        
+        res.status(200).send({ token })
+
+    } catch (error) {
+        res.status(400).send({
+            message: error.message
+        })
+    }
+}
+
+export const login = async (req: Request, res: Response) => {
+    try {
+        const userData =
+        {
+            email: req.body.email,
+            password: req.body.password
+        }
+        
+        const userDatabase = new UserDatabase();
+        const user = await userDatabase.getByEmail(userData.email);
+        
+        const hashManager = new HashManager()
+        const comparePassword = await hashManager.compare(userData.password, user.password)
+        
+        if (user.email !== userData.email) {
+            throw new Error("E-mail inválido.");
+        }
+        
+        if (comparePassword === false) {
+            throw new Error("Senha inválida.");
+        }
+        
+        const authenticator = new Authenticator();
+        const token = authenticator.generateToken({ id: user.id });
+        
+        res.status(200).send({ token });
+        
+    } catch (err) {
+        res.status(400).send({
+            message: err.message,
+        });
+    }
+   
+};
+
 

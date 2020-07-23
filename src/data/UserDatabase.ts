@@ -36,6 +36,10 @@ export class UserDatabase extends BaseDatabase {
           
           return result[0];
 
+        if(!result[0]){
+          throw new Error("Email não encontrado");
+        }
+
     } catch (err) {
       throw new Error(err.sqlMessage || err.message)
     }
@@ -47,5 +51,9 @@ export class UserDatabase extends BaseDatabase {
       .from(UserDatabase.TABLE_NAME)
       .where({ id });
     return result[0];
+
+    if(!result[0]){
+      throw new Error("Usuário não encontrado");
+    }
   }
 }
