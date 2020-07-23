@@ -3,7 +3,7 @@ import { Authenticator } from "../services/Authenticator";
 import { PostBusiness } from "../business/PostBusiness";
 
 import { UserDatabase } from "../data/UserDatabase";
-import { IdGenerator } from "../services/IdGenerator";
+import { CreatePostDTO } from "../model/Post";
 
 export class PostController {
 
@@ -15,10 +15,10 @@ export class PostController {
             const authenticator = new Authenticator();
             const authenticationData = authenticator.getData(token);
 
-            const postData = {
-                photo: request.body.photo,
-                description: request.body.description,
-                type: request.body.type
+            const postData: CreatePostDTO = {
+                photo: request.body.photo as string,
+                description: request.body.description as string,
+                type: request.body.type as string
             };
 
             const userDb = new UserDatabase();

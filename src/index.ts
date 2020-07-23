@@ -10,13 +10,15 @@ import { PostDatabase } from "./data/PostDatabase";
 import { FriendDatabase } from "./data/FriendDatabase";
 
 import { postRouter } from "./router/PostRouter";
+import { userRouter } from "./router/UserRouter";
+
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 
+app.use("/user", userRouter);
 app.use("/post", postRouter);
-
 
 app.post('/signup', async (req: express.Request, res: express.Response) => {
     try {
@@ -148,7 +150,7 @@ app.post('/user/invite/:id', async (req: express.Request, res: express.Response)
     }
 })
 
-app.get("/user/feed/:type", async (req: Request, res: Response) => {
+/* app.get("/user/feed/:type", async (req: Request, res: Response) => {
     try {
         const type = req.params.type;
         
@@ -166,12 +168,12 @@ app.get("/user/feed/:type", async (req: Request, res: Response) => {
         const typeFeed = await postDb.getByType(type);
 
         res.status(200).send({
-            /*id: post.id,
+            id: post.id,
             photo: post.photo,
             description: post.description,
             createdAt: post.createdAt,
             type: post.type,
-            userId: post.userId*/
+            userId: post.userId
             typeFeed
         });
     } catch (error) {
@@ -179,7 +181,7 @@ app.get("/user/feed/:type", async (req: Request, res: Response) => {
             message: error.message
         });
     }
-});
+}); */
 
 
 app.delete('/user/undo/:id', async (req: express.Request, res: express.Response) => {
