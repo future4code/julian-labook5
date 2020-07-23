@@ -3,6 +3,45 @@ import { Authenticator } from "../services/Authenticator";
 import { FriendDatabase } from "../data/FriendDatabase";
 import { UserDatabase } from "../data/UserDatabase";
 import { PostDatabase } from "../data/PostDatabase";
+import { UserBusiness } from "../business/UserBusiness";
+
+export class UserController {
+    async invite(req: Request, res: Response) {
+        const userBusiness: UserBusiness = new UserBusiness();
+        try {
+            const token = req.headers.authorization as string;
+
+            const authenticator = new Authenticator();
+            const authenticationData = authenticator.getData(token);
+
+            await userBusiness.invite(authenticationData.id, req.params.id);
+
+            res.status(200).send("Now you're friends!")
+        } catch (error) {
+            res.status(400).send({
+                message: error.message
+            })
+        }
+    }
+
+    async undo(req: Request, res: Response) {
+        const userBusiness: UserBusiness = new UserBusiness();
+        try {
+            const token = req.headers.authorization as string;
+
+            const authenticator = new Authenticator();
+            const authenticationData = authenticator.getData(token);
+
+            const friend = await userBusiness.undo(authenticationData.id, req.params.id);
+
+            res.status(200).send("Broken friendship D:")
+        } catch (error) {
+            res.status(400).send({
+                message: error.message
+            })
+        }
+    }
+}
 
 export const invite = async (req: express.Request, res: express.Response) => {
     try {
