@@ -1,8 +1,20 @@
 import express from 'express';
-import { UserController } from '../controller/UserController';
+import { 
+    invite, 
+    undo,
+    getFeedByType, 
+    getFeed,
+  getByType
+} from "../controller/UserController";
 
 export const userRouter = express.Router();
 
-const userController = new UserController();
+userRouter.get("/feed/:type", getByType);
 
-userRouter.get("/feed/:type", userController.getByType);
+userRouter.post('/invite/:id', invite);
+
+userRouter.delete('/undo/:id', undo);
+
+userRouter.get("/feed/:type", getFeedByType);
+
+userRouter.get("/feed", getFeed);

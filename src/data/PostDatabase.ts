@@ -34,6 +34,7 @@ export class PostDatabase extends BaseDatabase {
 			.select("*")
 			.from(PostDatabase.TABLE_NAME)
 			.where({ id });
+			console.log("result getById: ", result)
         return result[0];
     } 
 
