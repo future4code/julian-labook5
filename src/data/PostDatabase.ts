@@ -1,4 +1,5 @@
 import { BaseDatabase } from "./BaseDatabase";
+import { GetByTypeDTO } from "../model/Post";
 
 export class PostDatabase extends BaseDatabase {
     private static TABLE_NAME = "Labook_Post"; 
@@ -28,7 +29,7 @@ export class PostDatabase extends BaseDatabase {
 		}
     }
 
-    public async getById(id: string): Promise<any> {
+    public async getById(id: string): Promise<any/**Post[]*/> {
     	const result = await this.getConnection()
 			.select("*")
 			.from(PostDatabase.TABLE_NAME)
@@ -55,12 +56,16 @@ export class PostDatabase extends BaseDatabase {
         return result[0];
 	};
 
-	public getFeedByType = async (type: string): Promise<any> => {
+	public getFeedByType = async (id_user: string, type: string): Promise<GetByTypeDTO[]> => {
 		const result = await this.getConnection().raw(`
-		SELECT p.id, p.photo, p.description, p.description, p.createdAt, p.type, p.userId
-		FROM Labook_Post p
-		JOIN Labook_User u ON p.userId=u.id
-		WHERE p.type=${type}
+		SELECT p.id, p.photo, p.description, p.createdAt, p.type, p.id_user 
+		FROM Labook_Post p 
+		JOIN Labook_Friend f
+		ON f.id_user = p.id_user 
+		AND f.id_friend = "${id_user}"
+		OR f.id_user = "${id_user}"
+		AND f.id_friend = p.id_user
+		WHERE p.type="${type}"
 		`)
 		return result[0]
 	}
@@ -72,6 +77,6 @@ export class PostDatabase extends BaseDatabase {
             OR f.id_user = "${id_user}" AND f.id_friend = p.id_user;
         `)
         return result[0]
-      }
+	  }
 
 }

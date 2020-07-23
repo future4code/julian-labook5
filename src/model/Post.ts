@@ -47,3 +47,18 @@ export class Post {
         return this.id_user = id_user;
     };
 };
+
+export interface CreatePostDTO {
+    photo: string,
+    description: string,
+    type: string
+};
+
+export interface GetByTypeDTO {
+    id: string,
+    photo: string,
+    description: string,
+    type: string,
+    createdAt: Date,
+    id_user: string
+};

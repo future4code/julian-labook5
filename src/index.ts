@@ -7,15 +7,15 @@ import { userRouter } from "./router/UserRouter";
 import { loginRouter } from "./router/LoginRouter";
 import { signupRouter } from "./router/SignupRouter";
 
-
 dotenv.config();
 const app = express();
 app.use(express.json());
 
+app.use("/user", userRouter);
 app.use("/post", postRouter);
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
-//app.use('/signup', signupRouter);
+app.use('/signup', signupRouter);
 
 const server = app.listen(process.env.PORT || 3003, () => {
     if (server) {
