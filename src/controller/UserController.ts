@@ -1,4 +1,4 @@
-import express, {Request, Response} from "express";
+import express, { Request, Response } from "express";
 import { Authenticator } from "../services/Authenticator";
 import { FriendDatabase } from "../data/FriendDatabase";
 import { UserDatabase } from "../data/UserDatabase";
@@ -9,48 +9,47 @@ import { HashManager } from "../services/HashManager";
 
 import { UserBusiness } from "../business/UserBusiness";
 
-export class UserController {
-    async invite(req: Request, res: Response) {
-        const userBusiness: UserBusiness = new UserBusiness();
-        try {
-            const token = req.headers.authorization as string;
+export const invite = async (req: Request, res: Response) => {
+    const userBusiness: UserBusiness = new UserBusiness();
+    try {
+        const token = req.headers.authorization as string;
 
-            const authenticator = new Authenticator();
-            const authenticationData = authenticator.getData(token);
+        const authenticator = new Authenticator();
+        const authenticationData = authenticator.getData(token);
 
-            await userBusiness.invite(authenticationData.id, req.params.id);
+        await userBusiness.invite(authenticationData.id, req.params.id);
 
-            res.status(200).send("Now you're friends!")
-        } catch (error) {
-            res.status(400).send({
-                message: error.message
-            })
-        }
-    }
-
-    async undo(req: Request, res: Response) {
-        const userBusiness: UserBusiness = new UserBusiness();
-        try {
-            const token = req.headers.authorization as string;
-
-            const authenticator = new Authenticator();
-            const authenticationData = authenticator.getData(token);
-
-            const friend = await userBusiness.undo(authenticationData.id, req.params.id);
-
-            res.status(200).send("Broken friendship D:")
-        } catch (error) {
-            res.status(400).send({
-                message: error.message
-            })
-        }
+        res.status(200).send("Now you're friends!")
+    } catch (error) {
+        res.status(400).send({
+            message: error.message
+        })
     }
 }
+
+export const undo = async (req: Request, res: Response) => {
+    const userBusiness: UserBusiness = new UserBusiness();
+    try {
+        const token = req.headers.authorization as string;
+
+        const authenticator = new Authenticator();
+        const authenticationData = authenticator.getData(token);
+
+        const friend = await userBusiness.undo(authenticationData.id, req.params.id);
+
+        res.status(200).send("Broken friendship D:")
+    } catch (error) {
+        res.status(400).send({
+            message: error.message
+        })
+    }
+}
+
 
 export const getFeedByType = async (req: Request, res: Response) => {
     try {
         const type = req.params.type;
-        
+
         const token = req.headers.authorization as string;
 
         const authenticator = new Authenticator();
@@ -101,28 +100,6 @@ export const getFeed = async (req: Request, res: Response) => {
     }
 }
 
-export const deleteUser = async (req: express.Request, res: express.Response) => {
-    try {
-        const token = req.headers.authorization as string;
-
-        const authenticator = new Authenticator();
-        const authenticationData = authenticator.getData(token);
-        if (!req.params.id || req.params.id === "") {
-            throw new Error("Usuário inválido / Campo vazio.")
-        }
-
-        const undoFriend = new FriendDatabase();
-        await undoFriend.undo(authenticationData.id, req.params.id);
-
-        res.status(200).send("Você deixou de seguir o perfil")
-
-    } catch (error) {
-        res.status(400).send({
-            message: error.message
-        })
-    }
-}
-
 export const signup = async (req: express.Request, res: express.Response) => {
     try {
 
@@ -143,10 +120,10 @@ export const signup = async (req: express.Request, res: express.Response) => {
             email: req.body.email,
             password: req.body.password
         }
-        
+
         const userBusiness = new SignupBusiness();
         const token = await userBusiness.signup(userData.name, userData.email, userData.password);
-        
+
         res.status(200).send({ token })
 
     } catch (error) {
@@ -163,32 +140,32 @@ export const login = async (req: Request, res: Response) => {
             email: req.body.email,
             password: req.body.password
         }
-        
+
         const userDatabase = new UserDatabase();
         const user = await userDatabase.getByEmail(userData.email);
-        
+
         const hashManager = new HashManager()
         const comparePassword = await hashManager.compare(userData.password, user.password)
-        
+
         if (user.email !== userData.email) {
             throw new Error("E-mail inválido.");
         }
-        
+
         if (comparePassword === false) {
             throw new Error("Senha inválida.");
         }
-        
+
         const authenticator = new Authenticator();
         const token = authenticator.generateToken({ id: user.id });
-        
+
         res.status(200).send({ token });
-        
+
     } catch (err) {
         res.status(400).send({
             message: err.message,
         });
     }
-   
+
 };
 
 
