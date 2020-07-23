@@ -3,25 +3,47 @@ import { Authenticator } from "../services/Authenticator";
 import { FriendDatabase } from "../data/FriendDatabase";
 import { UserDatabase } from "../data/UserDatabase";
 import { PostDatabase } from "../data/PostDatabase";
+
 import { SignupBusiness } from "../business/SignupBusiness";
 import { HashManager } from "../services/HashManager";
 
-export const invite = async (req: express.Request, res: express.Response) => {
-    try {
-        const token = req.headers.authorization as string;
+import { UserBusiness } from "../business/UserBusiness";
 
-        const authenticator = new Authenticator();
-        const authenticationData = authenticator.getData(token);
+export class UserController {
+    async invite(req: Request, res: Response) {
+        const userBusiness: UserBusiness = new UserBusiness();
+        try {
+            const token = req.headers.authorization as string;
 
-        const inviteFriend = new FriendDatabase();
-        const friend = await inviteFriend.invite(authenticationData.id, req.params.id);
+            const authenticator = new Authenticator();
+            const authenticationData = authenticator.getData(token);
 
-        res.status(200).send("Agora vocês são amigos!")
+            await userBusiness.invite(authenticationData.id, req.params.id);
 
-    } catch (error) {
-        res.status(400).send({
-            message: error.message
-        })
+            res.status(200).send("Now you're friends!")
+        } catch (error) {
+            res.status(400).send({
+                message: error.message
+            })
+        }
+    }
+
+    async undo(req: Request, res: Response) {
+        const userBusiness: UserBusiness = new UserBusiness();
+        try {
+            const token = req.headers.authorization as string;
+
+            const authenticator = new Authenticator();
+            const authenticationData = authenticator.getData(token);
+
+            const friend = await userBusiness.undo(authenticationData.id, req.params.id);
+
+            res.status(200).send("Broken friendship D:")
+        } catch (error) {
+            res.status(400).send({
+                message: error.message
+            })
+        }
     }
 }
 
