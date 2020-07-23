@@ -13,7 +13,6 @@ app.use(express.json());
 
 app.use("/user", userRouter);
 app.use("/post", postRouter);
-app.use('/user', userRouter);
 app.use('/login', loginRouter);
 app.use('/signup', signupRouter);
 

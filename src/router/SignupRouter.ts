@@ -1,6 +1,6 @@
 import express, {Request, Response} from "express"
-import { signup } from "../controller/UserController";
+import { UserController } from "../controller/UserController";
 
 export const signupRouter = express.Router();
 
-signupRouter.post('/signup', signup)
+signupRouter.post('/signup', new UserController().signup)
