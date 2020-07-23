@@ -130,8 +130,8 @@ app.post("/login", async (req: express.Request, res: express.Response) => {
     }
 }); */
 
-app.use("/user/invite/:id", userRouter);
-app.use("/user/undo/:id", userRouter);
+app.use("/user", userRouter);
+
 /*app.post('/user/invite/:id', async (req: express.Request, res: express.Response) => {
     try {
         const token = req.headers.authorization as string;

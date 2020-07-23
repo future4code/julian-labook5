@@ -14,7 +14,7 @@ export class UserController {
             const authenticator = new Authenticator();
             const authenticationData = authenticator.getData(token);
     
-            const friend = await userBusiness.invite(authenticationData.id, req.params.id);
+            await userBusiness.invite(authenticationData.id, req.params.id);
     
             res.status(200).send("Now you're friends!")
         } catch (error) {
