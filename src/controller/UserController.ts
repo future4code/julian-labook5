@@ -3,7 +3,7 @@ import { Authenticator } from "../services/Authenticator";
 import { FriendDatabase } from "../data/FriendDatabase";
 import { UserDatabase } from "../data/UserDatabase";
 import { PostDatabase } from "../data/PostDatabase";
-
+import {InviteFriendDTO, UndoFriendshipDTO} from "../model/Friend"
 import { SignupBusiness } from "../business/SignupBusiness";
 import { HashManager } from "../services/HashManager";
 
@@ -42,8 +42,11 @@ export class UserController {
 
             const authenticator = new Authenticator();
             const authenticationData = authenticator.getData(token);
-
-            await userBusiness.invite(authenticationData.id, request.params.id);
+            const inviteData: InviteFriendDTO = {
+                id_user: authenticationData.id as string,
+                id_friend: request.params.id as string,
+            };
+            await userBusiness.invite(inviteData.id_user, inviteData.id_friend);
 
             response.status(200).send("Now you're friends!")
         } catch (error) {
@@ -61,7 +64,11 @@ export class UserController {
             const authenticator = new Authenticator();
             const authenticationData = authenticator.getData(token);
 
-            await userBusiness.undo(authenticationData.id, request.params.id);
+            const undoData: UndoFriendshipDTO = {
+                id_user: authenticationData.id as string,
+                id_friend: request.params.id as string,
+            };
+            await userBusiness.undo(undoData.id_user, undoData.id_friend);
 
             response.status(200).send("Broken friendship D:")
         } catch (error) {
