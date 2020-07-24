@@ -3,11 +3,9 @@ import { Authenticator } from "../services/Authenticator";
 import { FriendDatabase } from "../data/FriendDatabase";
 import { UserDatabase } from "../data/UserDatabase";
 import { PostDatabase } from "../data/PostDatabase";
-
-import { SignupBusiness } from "../business/SignupBusiness";
 import { HashManager } from "../services/HashManager";
-
 import { UserBusiness } from "../business/UserBusiness";
+import { User } from "../model/User";
 
 export class UserController {
     async getByType(request: Request, response: Response) {
@@ -138,8 +136,8 @@ export class UserController {
                 password: request.body.password
             }
 
-            const userBusiness = new SignupBusiness();
-            const token = await userBusiness.signup(userData.name, userData.email, userData.password);
+            const userBusiness = new UserBusiness();
+            const token = await userBusiness.create(userData.name, userData.email, userData.password);
 
             response.status(200).send({ token })
 
@@ -159,12 +157,12 @@ export class UserController {
             }
 
             const userDatabase = new UserDatabase();
-            const user = await userDatabase.getByEmail(userData.email);
+            const user: User = await userDatabase.getByEmail(userData.email);
 
             const hashManager = new HashManager()
-            const comparePassword = await hashManager.compare(userData.password, user.password)
+            const comparePassword = await hashManager.compare(userData.password, user.getPassword())
 
-            if (user.email !== userData.email) {
+            if (user.getEmail !== userData.email) {
                 throw new Error("E-mail inválido.");
             }
 
@@ -173,7 +171,7 @@ export class UserController {
             }
 
             const authenticator = new Authenticator();
-            const token = authenticator.generateToken({ id: user.id });
+            const token = authenticator.generateToken({ id: user.getId()});
 
             response.status(200).send({ token });
 
