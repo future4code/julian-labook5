@@ -1,9 +1,14 @@
+export enum UserType {
+    NORMAL = "normal",
+    EVENTO = "evento"
+};
+
 export class Post {
     constructor(
         private id: string, 
         private photo: string, 
         private description: string,
-        private type: string, 
+        private type: UserType, 
         private id_user: string
     ) {};
 
@@ -39,7 +44,7 @@ export class Post {
         return this.description = description;
     };
 
-    setType(type: string): string {
+    setType(type: UserType): string {
         return this.type = type;
     };
 
@@ -54,11 +59,8 @@ export interface CreatePostDTO {
     type: string
 };
 
-export interface GetByTypeDTO {
-    id: string,
-    photo: string,
-    description: string,
+export interface GetFeedByTypeDTO {
     type: string,
-    createdAt: Date,
-    id_user: string
+    id_user: string,
+    page: number
 };

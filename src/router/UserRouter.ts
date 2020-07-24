@@ -3,7 +3,7 @@ import { UserController } from "../controller/UserController";
 
 export const userRouter = express.Router();
 
-userRouter.get("/feed/:type", new UserController().getByType);
+userRouter.get("/feed/:type", new UserController().getFeedByType);
 
 userRouter.post('/invite/:id', new UserController().invite);
 
