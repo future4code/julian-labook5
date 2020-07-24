@@ -24,7 +24,7 @@ export class PostController {
             const userDb = new UserDatabase();
             const user = await userDb.getById(authenticationData.id);
 
-            await postBusiness.create(postData.photo, postData.description, postData.type, user.id);
+            await postBusiness.create(postData.photo, postData.description, postData.type, user.getId());
             
             response.status(200).send({
                 message: "Post criado com sucesso!"

@@ -1,4 +1,4 @@
-import { threadId } from "worker_threads";
+
 
 export class User{
     constructor(
@@ -39,6 +39,20 @@ export class User{
     setPassword(password: string): void{
         this.password = password;
     }
-
    
+}
+
+export interface CreateUserDTO {
+    name: string,
+    email: string,
+    password: string
+};
+
+export interface GetFeedDTO {
+    id: string,
+    photo: string,
+    description: string,
+    type: string,
+    createdAt: Date,
+    id_user: string
 }

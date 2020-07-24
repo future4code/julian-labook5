@@ -41,7 +41,7 @@ export class UserDatabase extends BaseDatabase {
           throw new Error("Email não encontrado");
         }
 
-        const user = new User(data.id, data.email, data.name, data.password);
+        const user = new User(data.id, data.name, data.email, data.password);
         return user;
     } catch (err) {
       throw new Error(err.sqlMessage || err.message)

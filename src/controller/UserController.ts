@@ -21,7 +21,7 @@ export class UserController {
             const userDb = new UserDatabase();
             const user = await userDb.getById(authenticationData.id);
 
-            const dataTypeFeed = await userBusiness.getFeedByType(user.id, type);
+            const dataTypeFeed = await userBusiness.getFeedByType(user.getId(), type);
 
             response.status(200).send({
                 dataTypeFeed: dataTypeFeed
@@ -102,10 +102,10 @@ export class UserController {
             const authenticationData = authenticator.getData(token);
 
             const post = new PostDatabase();
-            const postData = await post.getPosts(authenticationData.id);
+            const feed = await post.getPosts(authenticationData.id);
 
             response.status(200).send({
-                postData
+                feed
             })
 
         } catch (err) {
@@ -158,11 +158,11 @@ export class UserController {
 
             const userDatabase = new UserDatabase();
             const user: User = await userDatabase.getByEmail(userData.email);
-
+            
             const hashManager = new HashManager()
             const comparePassword = await hashManager.compare(userData.password, user.getPassword())
-
-            if (user.getEmail !== userData.email) {
+            console.log(user.getEmail(), userData.email, user.getName())
+            if (user.getEmail() !== userData.email) {
                 throw new Error("E-mail inválido.");
             }
 
