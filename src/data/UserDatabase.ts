@@ -1,4 +1,5 @@
 import { BaseDatabase } from "./BaseDatabase";
+import { User } from "../model/User";
 
 export class UserDatabase extends BaseDatabase {
      
@@ -26,7 +27,7 @@ export class UserDatabase extends BaseDatabase {
       }
     }
 
-  async getByEmail(email: string): Promise<any> {
+  async getByEmail(email: string): Promise<User> {
     try {
       const result =
         await this.getConnection()
@@ -34,26 +35,38 @@ export class UserDatabase extends BaseDatabase {
           .from(UserDatabase.TABLE_NAME)
           .where({email});
           
-          return result[0];
+          const data = result[0];
 
         if(!result[0]){
           throw new Error("Email não encontrado");
         }
 
+        const user = new User(data.id, data.name, data.email, data.password);
+        return user;
     } catch (err) {
       throw new Error(err.sqlMessage || err.message)
     }
   }
 
-  public async getById(id: string): Promise<any> {
-    const result = await this.getConnection()
-      .select("*")
-      .from(UserDatabase.TABLE_NAME)
-      .where({ id });
-    return result[0];
+  public async getById(id: string): Promise<User> {
+    try{
+      const result = await this.getConnection()
+        .select("*")
+        .from(UserDatabase.TABLE_NAME)
+        .where({ id });
+      
+      const data = result[0];
 
-    if(!result[0]){
-      throw new Error("Usuário não encontrado");
+      if(!result[0]){
+        throw new Error("Usuário não encontrado");
+      }
+
+      const user = new User(data.id, data.email, data.name, data.password);
+      return user;
+
+    } catch (err) {
+        throw new Error(err.sqlMessage || err.message)
     }
+
   }
 }

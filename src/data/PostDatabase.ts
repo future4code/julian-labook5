@@ -1,4 +1,5 @@
 import { BaseDatabase } from "./BaseDatabase";
+import { GetFeedDTO } from "../model/User";
 import { GetByTypeDTO, GetFeedByTypeDTO, Post } from "../model/Post";
 import { UserDatabase } from "./UserDatabase";
 
@@ -57,7 +58,7 @@ export class PostDatabase extends BaseDatabase {
         return result[0];
 	};
 
-	public getPosts = async (id_user: string): Promise<any> => {
+	public getPosts = async (id_user: string): Promise<Post[]> => {
         const result = await this.getConnection().raw(`
             SELECT p.id, p.photo, p.description, p.createdAt, p.type, p.id_user FROM Labook_Post p 
             JOIN Labook_Friend f ON f.id_user = p.id_user AND f.id_friend = "${id_user}"
