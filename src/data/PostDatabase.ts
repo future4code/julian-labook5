@@ -1,6 +1,7 @@
 import { BaseDatabase } from "./BaseDatabase";
-import { GetByTypeDTO, Post } from "../model/Post";
 import { GetFeedDTO } from "../model/User";
+import { GetByTypeDTO, GetFeedByTypeDTO, Post } from "../model/Post";
+import { UserDatabase } from "./UserDatabase";
 
 export class PostDatabase extends BaseDatabase {
     private static TABLE_NAME = "Labook_Post"; 
@@ -57,20 +58,6 @@ export class PostDatabase extends BaseDatabase {
         return result[0];
 	};
 
-	public getFeedByType = async (id_user: string, type: string): Promise<GetByTypeDTO[]> => {
-		const result = await this.getConnection().raw(`
-		SELECT p.id, p.photo, p.description, p.createdAt, p.type, p.id_user 
-		FROM Labook_Post p 
-		JOIN Labook_Friend f
-		ON f.id_user = p.id_user 
-		AND f.id_friend = "${id_user}"
-		OR f.id_user = "${id_user}"
-		AND f.id_friend = p.id_user
-		WHERE p.type="${type}"
-		`)
-		return result[0]
-	}
-
 	public getPosts = async (id_user: string): Promise<Post[]> => {
         const result = await this.getConnection().raw(`
             SELECT p.id, p.photo, p.description, p.createdAt, p.type, p.id_user FROM Labook_Post p 
@@ -80,4 +67,25 @@ export class PostDatabase extends BaseDatabase {
         return result[0]
 	  }
 
+	async getFeedByType(postData: GetFeedByTypeDTO): Promise<Post[]> {
+		
+		const offset: number = 5 * (postData.page - 1);
+		
+		const result = await this.getConnection().raw(`
+			SELECT p.id, p.photo, p.description, p.createdAt, p.type, p.id_user 
+			FROM Labook_Post p 
+			JOIN Labook_Friend f
+			ON f.id_user = p.id_user 
+			AND f.id_friend = "${postData.id_user}"
+			OR f.id_user = "${postData.id_user}"
+			AND f.id_friend = p.id_user
+			WHERE p.type="${postData.type}"
+			LIMIT 5
+			OFFSET ${offset};
+		`);
+
+		await BaseDatabase.destroyConnection();
+
+		return result[0];
+	};
 }

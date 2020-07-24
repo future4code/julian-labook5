@@ -3,12 +3,19 @@ import { Authenticator } from "../services/Authenticator";
 import { FriendDatabase } from "../data/FriendDatabase";
 import { UserDatabase } from "../data/UserDatabase";
 import { PostDatabase } from "../data/PostDatabase";
+import {InviteFriendDTO, UndoFriendshipDTO} from "../model/Friend"
+import { SignupBusiness } from "../business/SignupBusiness";
 import { HashManager } from "../services/HashManager";
 import { UserBusiness } from "../business/UserBusiness";
 import { User } from "../model/User";
 
 export class UserController {
-    async getByType(request: Request, response: Response) {
+    
+  
+import { PostBusiness } from "../business/PostBusiness";
+
+export class UserController {
+async getByType(request: Request, response: Response) {
         const userBusiness: UserBusiness = new UserBusiness();
         try {
             const type = request.params.type;
@@ -40,8 +47,11 @@ export class UserController {
 
             const authenticator = new Authenticator();
             const authenticationData = authenticator.getData(token);
-
-            await userBusiness.invite(authenticationData.id, request.params.id);
+            const inviteData: InviteFriendDTO = {
+                id_user: authenticationData.id as string,
+                id_friend: request.params.id as string,
+            };
+            await userBusiness.invite(inviteData.id_user, inviteData.id_friend);
 
             response.status(200).send("Now you're friends!")
         } catch (error) {
@@ -59,7 +69,11 @@ export class UserController {
             const authenticator = new Authenticator();
             const authenticationData = authenticator.getData(token);
 
-            await userBusiness.undo(authenticationData.id, request.params.id);
+            const undoData: UndoFriendshipDTO = {
+                id_user: authenticationData.id as string,
+                id_friend: request.params.id as string,
+            };
+            await userBusiness.undo(undoData.id_user, undoData.id_friend);
 
             response.status(200).send("Broken friendship D:")
         } catch (error) {
@@ -71,28 +85,26 @@ export class UserController {
 
     async getFeedByType(request: Request, response: Response) {
         try {
-            const type = request.params.type;
-
             const token = request.headers.authorization as string;
-
             const authenticator = new Authenticator();
             const authenticationData = authenticator.getData(token);
 
             const userDb = new UserDatabase();
             const user = await userDb.getById(authenticationData.id);
 
-            const postDb = new PostDatabase();
-            const post = await postDb.getByType(type);
-
-            const typeFeed = await postDb.getByType(type);
-
-            response.status(200).send({ typeFeed });
-        } catch (error) {
-            response.status(400).send({
-                message: error.message
+            const feedByType = await new UserBusiness().getFeedByType({
+                type: request.params.type as string,
+                id_user: user.id as string,
+                page: Number(request.query.page) || 1
             });
-        }
-    }
+
+            response.status(200).send({feedByType});
+        } catch (error) {
+            response.status(error.code || 400).send({
+                message: error.message  
+            })
+        };
+    };
 
     async getFeed(request: Request, response: Response) {
         try {
